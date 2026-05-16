@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "platformio.platformio-ide",
+        "ms-python.python",
+        "ms-azuretools.vscode-docker",
+        "dart-code.flutter",
+        "dart-code.dart-code",
+        "mhutchie.git-graph"
+    ]
+}
