@@ -90,20 +90,14 @@ void loop() {
         String str = "";
 
         for(size_t i = 0; i < packetLength; i++) {
-
             str += (char)rxBuffer[i];
         }
-
         JsonObject payloadObj =
             doc["payload"].to<JsonObject>();
-
         payloadObj["raw"] = str;
-
         char buffer[512];
         serializeJson(doc, buffer);
-
         bool ok = mqttClient.publish("c2e2/sensores/1", buffer);
-
         if (ok) {
             Serial.println("MQTT publish OK");
             Serial.println(buffer);
