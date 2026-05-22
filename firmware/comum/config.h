@@ -2,7 +2,11 @@
 #define CONFIG_H
 
 #define LORA_FREQUENCY 903.875
+
+#define LORA_TX_POWER 10
+
 #define MQTT_PORT 1883
+
 #define MQTT_TOPIC_BASE "c2e2/sensores/"
 
 #endif

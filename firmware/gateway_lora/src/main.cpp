@@ -4,7 +4,7 @@
 #include "wifi_manager.h"
 #include "mqtt_manager.h"
 #include "lora_manager.h"
-
+#include "D:\Desenvolvimento\C2E2-plataforma-iot\firmware\comum\config.h"
 unsigned long ultimoHeartbeat = 0;
 unsigned long ultimoPacote = 0;
 
@@ -38,22 +38,98 @@ void verificaMQTT() {
 }
 
 void verificaWatchdogLoRa() {
-    if (millis() - ultimoPacote > 300000) {
-        Serial.println("Watchdog LoRa acionado");
+
+    static bool alertaEmitido = false;
+
+    unsigned long tempoSemPacote =
+        millis() - ultimoPacote;
+
+    // 5 min sem pacote -> apenas alerta
+
+    if (tempoSemPacote > 300000 &&
+        !alertaEmitido) {
+
+        Serial.println(
+            "ALERTA: sem pacote LoRa > 5 min"
+        );
+
+        alertaEmitido = true;
+    }
+
+    // 30 min sem pacote -> reboot
+
+    if (tempoSemPacote > 1800000) {
+
+        Serial.println(
+            "Watchdog crítico: reboot ESP32"
+        );
+
         ESP.restart();
+    }
+
+    // voltou a receber -> limpa alerta
+
+    if (tempoSemPacote < 300000) {
+        alertaEmitido = false;
     }
 }
 
 void setup() {
+
     Serial.begin(115200);
     delay(2000);
 
     Serial.println("=== C2E2 Gateway ===");
+
+    esp_reset_reason_t motivo = esp_reset_reason();
+
+    Serial.print("Motivo do reboot: ");
+
+    switch(motivo) {
+
+        case ESP_RST_POWERON:
+            Serial.println("POWERON");
+            break;
+
+        case ESP_RST_SW:
+            Serial.println("SOFTWARE");
+            break;
+
+        case ESP_RST_PANIC:
+            Serial.println("PANIC");
+            break;
+
+        case ESP_RST_INT_WDT:
+            Serial.println("INT_WDT");
+            break;
+
+        case ESP_RST_TASK_WDT:
+            Serial.println("TASK_WDT");
+            break;
+
+        case ESP_RST_WDT:
+            Serial.println("WDT");
+            break;
+
+        case ESP_RST_DEEPSLEEP:
+            Serial.println("DEEPSLEEP");
+            break;
+
+        case ESP_RST_BROWNOUT:
+            Serial.println("BROWNOUT");
+            break;
+
+        default:
+            Serial.println("OUTRO");
+            break;
+    }
+
     conectaWiFi();
     conectaMQTT();
     iniciaLoRa();
 
     ultimoPacote = millis();
+
     Serial.println("Gateway pronto");
 }
 
@@ -69,9 +145,13 @@ void loop() {
 
     verificaWatchdogLoRa();
 
-    uint8_t rxBuffer[256];
-    int state = radio.receive(rxBuffer, sizeof(rxBuffer));
-
+    String str;
+    
+    int state =
+        radio.receive(str);
+    
+        Serial.print("STATE RX = ");
+    Serial.println(state);
     if (state == RADIOLIB_ERR_NONE) {
         ultimoPacote = millis();
 
@@ -85,19 +165,37 @@ void loop() {
         doc["timestamp_ms"] = millis();
         doc["heap"] = ESP.getFreeHeap();
 
-        size_t packetLength = radio.getPacketLength();
+        JsonDocument payloadRX;
 
-        String str = "";
+        DeserializationError erroRX =
+              deserializeJson(payloadRX, str);
 
-        for(size_t i = 0; i < packetLength; i++) {
-            str += (char)rxBuffer[i];
+        if(!erroRX) {
+            doc["payload"] = payloadRX;
+
+        } else {
+
+             doc["payload_raw"] = str;
         }
-        JsonObject payloadObj =
-            doc["payload"].to<JsonObject>();
-        payloadObj["raw"] = str;
         char buffer[512];
         serializeJson(doc, buffer);
-        bool ok = mqttClient.publish("c2e2/sensores/1", buffer);
+    int sensorID = 0;
+
+    if(!erroRX) {
+
+      sensorID =
+           payloadRX["id"] | 0;
+    }
+
+    String topico =
+      "c2e2/sensores/" +
+      String(sensorID);
+
+    bool ok =
+        mqttClient.publish(
+           topico.c_str(),
+           buffer
+        );
         if (ok) {
             Serial.println("MQTT publish OK");
             Serial.println(buffer);

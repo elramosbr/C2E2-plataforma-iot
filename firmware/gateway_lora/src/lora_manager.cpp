@@ -2,7 +2,7 @@
 #include <RadioLib.h>
 
 #include "lora_manager.h"
-#include "config.h"
+#include "D:\Desenvolvimento\C2E2-plataforma-iot\firmware\comum\config.h"
 
 SX1262 radio = new Module(8, 14, 12, 13);
 
