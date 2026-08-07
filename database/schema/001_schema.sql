@@ -11,9 +11,6 @@ PRAGMA foreign_keys = ON;
 -- Gateway
 -- ============================================================
 
-gateway_timestamp_ms INTEGER,
-recebido_em DATETIME DEFAULT CURRENT_TIMESTAMP
-
 CREATE TABLE IF NOT EXISTS gateway (
 
     id              INTEGER PRIMARY KEY,
@@ -65,10 +62,8 @@ CREATE TABLE IF NOT EXISTS sensores (
 CREATE TABLE IF NOT EXISTS medicoes (
 
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
-
+    
     sensor_id           INTEGER NOT NULL,
-
-    data_hora           DATETIME NOT NULL,
 
     corrente            REAL,
 
@@ -84,8 +79,14 @@ CREATE TABLE IF NOT EXISTS medicoes (
 
     gateway_timestamp_ms INTEGER,
 
-    recebido_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+    sensor_timestamp_ms INTEGER,
 
+    mqtt_topic TEXT,
+
+    payload_json TEXT,
+
+    recebido_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+   
     FOREIGN KEY(sensor_id)
 
         REFERENCES sensores(id)

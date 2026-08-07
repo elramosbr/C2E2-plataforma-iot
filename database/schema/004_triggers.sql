@@ -5,4 +5,32 @@
 -- Data    : 05/08/2026
 -- ======================================================
 
--- Triggers futuros
+/*
+=================================================================
+
+VERSÃO 1.0
+
+Nesta versão da plataforma não são utilizados TRIGGERS.
+
+Toda a lógica de negócio é executada pelo Node-RED, que é
+responsável por:
+
+- validação das mensagens MQTT;
+- normalização dos dados;
+- cálculo das estatísticas;
+- persistência das medições;
+- atualização do Dashboard.
+
+Os triggers serão introduzidos em versões futuras apenas quando
+forem necessários para automatizar regras diretamente no banco
+de dados.
+
+Possíveis evoluções:
+
+- geração automática de eventos;
+- atualização de estatísticas;
+- retenção automática de histórico;
+- auditoria de alterações.
+
+=================================================================
+*/
