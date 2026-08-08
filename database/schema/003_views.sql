@@ -35,7 +35,11 @@ GROUP BY
     s.nome,
     s.ambiente;
 
-    vw_consumo_atual
+
+-- ============================================================
+-- View - Consumo atual
+-- ============================================================
+
 CREATE VIEW IF NOT EXISTS vw_consumo_atual AS
 
 SELECT

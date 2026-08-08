@@ -22,7 +22,7 @@ VALUES (
     1,
     'GW-01',
     'Gateway LoRa Principal',
-    'Instalação Residencial'
+    'Instalação Residencial',
     1
 
 );
