@@ -1,3 +1,11 @@
+# ================================================================
+# Projeto : C2E2 — Plataforma IoT
+# Arquivo : config.py
+# Módulo  : FastAPI + configuração + conexão SQLite
+# Etapa   : E6.3.1
+# Versão  : 1.0
+# ================================================================
+
 import os
 
 

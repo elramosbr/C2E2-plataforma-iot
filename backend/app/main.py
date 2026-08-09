@@ -1,13 +1,25 @@
+# ================================================================
+# Projeto : C2E2 — Plataforma IoT
+# Arquivo : main.py
+# Módulo  : Backend / API
+# Etapa   : E6.3.1
+# Versão  : 1.0
+# ================================================================
+
 from fastapi import FastAPI
 
 from app.core.config import settings
 from app.database.sqlite import get_connection
+from app.sensors.routes import router as sensors_router
 
 
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION
 )
+
+
+app.include_router(sensors_router)
 
 
 @app.get("/")
