@@ -35,3 +35,47 @@ def list_sensors():
 
     finally:
         connection.close()
+
+
+# ================================================================
+# E6.3.2.1 — Consulta individual de sensor
+# ================================================================
+
+def get_sensor(sensor_id: int):
+    """
+    Retorna um sensor pelo ID.
+
+    Retorna:
+        dict: dados do sensor quando encontrado.
+        None: quando o sensor não existe.
+    """
+
+    connection = get_connection()
+
+    try:
+        cursor = connection.execute(
+            """
+            SELECT
+                id,
+                gateway_id,
+                nome,
+                ambiente,
+                tensao_nominal,
+                observacao,
+                ativo,
+                criado_em
+            FROM sensores
+            WHERE id = ?
+            """,
+            (sensor_id,),
+        )
+
+        row = cursor.fetchone()
+
+        if row is None:
+            return None
+
+        return dict(row)
+
+    finally:
+        connection.close()
