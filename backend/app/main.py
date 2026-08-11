@@ -11,6 +11,7 @@ from fastapi import FastAPI
 from app.core.config import settings
 from app.database.sqlite import get_connection
 from app.sensors.routes import router as sensors_router
+from app.measurements.routes import router as measurements_router
 
 
 app = FastAPI(
@@ -20,6 +21,7 @@ app = FastAPI(
 
 
 app.include_router(sensors_router)
+app.include_router(measurements_router)
 
 
 @app.get("/")
